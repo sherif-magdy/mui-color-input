@@ -1,3 +1,7 @@
 packages:
   # include packages in subfolders (change as required)
   - 'docs'
+allowBuilds:
+  core-js: false         # postinstall only prints a sponsor message
+  core-js-pure: false    # postinstall only prints a sponsor message
+  esbuild: true          # Vite/Vitest/Storybook rely on it; fetches the native binary
