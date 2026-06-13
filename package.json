@@ -96,6 +96,7 @@
     "husky": "^9.1.7",
     "jsdom": "^29.0.1",
     "prettier": "^3.8",
+    "prettier-plugin-curly": "^0.4.1",
     "react": "^19.2",
     "react-dom": "^19.2",
     "standard-version": "^9.5.0",
