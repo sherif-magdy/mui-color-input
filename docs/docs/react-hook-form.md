@@ -32,10 +32,17 @@ const App = () => {
         rules={{ validate: matchIsValidColor }}
         render={({ field, fieldState }) => (
           <MuiColorInput
-            {...field}
+            value={field.value}
+            onChange={(newValue) => field.onChange(newValue)}
             format="hex"
-            helperText={fieldState.invalid ? "Color is invalid" : ""}
-            error={fieldState.invalid}
+            slotProps={{
+              textField: {
+                name: field.name,
+                onBlur: field.onBlur,
+                helperText: fieldState.invalid ? "Color is invalid" : "",
+                error: fieldState.invalid
+              }
+            }}
           />
         )}
       />
@@ -48,5 +55,7 @@ const App = () => {
   )
 }
 ```
+
+**Note:** In v10, the component `ref` targets the root `<span>` rather than the input, so React Hook Form's automatic focus-on-error is not wired by default. The `field.ref` is intentionally omitted from the example above — manage focus explicitly if your form relies on it.
 
 [![Edit on CodeSandbox](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/react-hook-form-with-mui-color-input-94iiv1?fontsize=14&hidenavigation=1&theme=dark)

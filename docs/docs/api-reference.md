@@ -74,7 +74,6 @@ The callback gives you **2 parameters**:
 Example:
 
 ```tsx
-
 const handleChange = (color, colors) => {
   /**
   color: "#ffffff"
@@ -111,11 +110,11 @@ The format to use for the color [value](#value). The first parameter of `onChang
 
 ## `fallbackValue`
 
-- Default: `"black"`
+- Default: `undefined`
 - Type: `MuiColorInputValue`
 - Required: `false`
 
-A fallback color [value](#value) in case the user updates the input with an invalid color value.
+A fallback color [value](#value) applied when the user leaves the input with an invalid color. When omitted, an invalid input is left untouched.
 
 ```tsx
 <MuiColorInput fallbackValue="#ffffff" />
@@ -131,22 +130,22 @@ A fallback color [value](#value) in case the user updates the input with an inva
 - Type: `boolean`
 - Required: `false`
 
-Whether to show input controls for a color’s alpha channel.
+Whether to hide the input controls for a color's alpha channel.
 
 ```tsx
 <MuiColorInput isAlphaHidden />
 ```
 
-## `adornmentPosition`
+## `isTextFieldHidden`
 
-- Default: `"start"`
-- Type: `"start" | "end"`
+- Default: `false`
+- Type: `boolean`
 - Required: `false`
 
-The position of the color button adornment relative to the text input.
+When `true`, the text input is omitted and the component renders as a standalone color swatch. The root element receives the `MuiColorInput-Swatch` class in this mode. Clicking the swatch still opens the picker popover (unless [`disablePopover`](#disablepopover) is set).
 
 ```tsx
-<MuiColorInput adornmentPosition="end" />
+<MuiColorInput value={color} isTextFieldHidden onChange={handleChange} />
 ```
 
 ## `disablePopover`
@@ -161,31 +160,105 @@ Whether to disable the color picker popover. When set to `true`, clicking the co
 <MuiColorInput disablePopover />
 ```
 
-## `Adornment`
+## `slots`
 
-- Default: `MuiColorInputButton`
-- Type: `(props: MuiColorButtonProps) => React.ReactNode`
+- Default: `{}`
+- Type: `MuiColorInputSlots`
 - Required: `false`
 
-A custom component to replace the default color button adornment.
+An object mapping each part of `MuiColorInput` to a custom React element type (a component or a DOM tag). Only the slots you provide are overridden; the rest fall back to their built-in component.
+
+| Slot | Default component | Renders |
+|------|-------------------|---------|
+| `root` | `Box` | The wrapping `<span>` (`display: inline-flex`, `position: relative`). |
+| `textField` | `ColorTextField` | The text input (wraps MUI `TextField`). |
+| `adornment` | `MuiColorInputButton` (`ColorButton`) | The color swatch button attached to the input. |
+| `popover` | `ColorPopover` | The dropdown (wraps MUI `Popover`). |
+| `popoverBody` | `ColorPopoverBody` | The popover's inner controls (channels and preview). |
 
 ```tsx
-const MyCustomButton = (props) => {
-  return <button style={{ backgroundColor: props.bgColor }} {...props} />
-}
+const CustomSwatch = (props) => (
+  <button style={{ backgroundColor: props.bgColor }} {...props} />
+)
 
-<MuiColorInput Adornment={MyCustomButton} />
+<MuiColorInput slots={{ adornment: CustomSwatch }} />
 ```
 
-## `PopoverProps`
+## `slotProps`
 
-- Default: `undefined`
-- Type: `PopoverProps`
+- Default: `{}`
+- Type: `MuiColorInputSlotProps`
 - Required: `false`
 
-Props passed to the MUI [Popover](https://mui.com/material-ui/api/popover/) component (except `anchorEl`, `open`, and `children` which are managed internally).
+An object whose props are forwarded to the matching [slot](#slots). Props are merged with the component's internal defaults using MUI's `mergeSlotProps`, so:
+
+- **Event handlers compose** — your `onBlur` (via `slotProps.textField`) or `onClose` (via `slotProps.popover`) runs *alongside* the internal handler, not instead of it.
+- **`className` concatenates**, and **`style` / `sx` merge**.
+- **Reserved keys**: `slotProps.textField.slotProps.input.startAdornment` and `endAdornment` are managed internally to host the adornment; overriding them has no effect.
+
+| Slot | `slotProps` type |
+|------|------------------|
+| `root` | `Partial<BoxProps>` — receives the internal `component` and `ref`. Style the root via `className`, `style`, or `sx` here; `className` is concatenated with the internal `MuiColorInput-Root` class (and `MuiColorInput-Swatch` when [`isTextFieldHidden`](#istextfieldhidden) is set), so it never replaces them. |
+| `textField` | `Partial<TextFieldProps>` — `onChange`, `value`, `defaultValue`, `select`, `type`, `multiline`, `inputRef`, `InputProps`, `inputProps`, and `InputLabelProps` are managed internally. Use this slot for `label`, `disabled`, `color`, `fullWidth`, `size`, `onBlur`, etc. |
+| `adornment` | `Partial<ColorButtonProps> & { position?: 'start' \| 'end' }` — see [`position`](#slotpropsadornmentposition) below. |
+| `popover` | `Partial<PopoverProps>` — `open`, `anchorEl`, and `children` are managed internally. |
+| `popoverBody` | `Partial<ColorPopoverBodyProps>`. |
 
 ```tsx
-<MuiColorInput PopoverProps={{ anchorOrigin: { vertical: ‘bottom’, horizontal: ‘left’ } }} />
+<MuiColorInput
+  value={color}
+  format="rgb"
+  onChange={handleChange}
+  slotProps={{
+    root: { className: 'my-root' },
+    textField: { label: 'Color', color: 'warning', fullWidth: true },
+    adornment: { position: 'end', sx: { width: 40, height: 40 } },
+    popover: { PaperProps: { sx: { width: 300 } } },
+    popoverBody: { isAlphaHidden: true }
+  }}
+/>
 ```
 
+### `slotProps.adornment.position`
+
+- Default: `"start"`
+- Type: `"start" | "end"`
+
+Replaces the former `adornmentPosition` prop. Controls which side of the input the color swatch sits on, and adjusts the popover's anchor and transform origin accordingly. It is consumed internally and **not** forwarded to the adornment component.
+
+```tsx
+<MuiColorInput slotProps={{ adornment: { position: 'end' } }} />
+```
+
+## `ref`
+
+- Type: `React.Ref<HTMLSpanElement>`
+
+A ref to the root `<span class="MuiColorInput-Root">` wrapper. **Breaking**: in v9 the ref resolved to the text field's root `<div>`; in v10 it targets the outermost root `<span>`.
+
+## Exported types
+
+`mui-color-input` exports the following types alongside the component:
+
+| Type | Description |
+|------|-------------|
+| `MuiColorInputProps` | The component's props (described in this document). |
+| `MuiColorInputSlots` | Shape of the [`slots`](#slots) prop. |
+| `MuiColorInputSlotProps` | Shape of the [`slotProps`](#slotprops) prop. |
+| `MuiColorInputAdornmentSlotProps` | Shape of `slotProps.adornment` — `Partial<ColorButtonProps> & { position?: 'start' \| 'end' }`. |
+
+Also exported: `MuiColorInputValue`, `MuiColorInputColors`, `MuiColorInputFormat`, `MuiColorButtonProps`, and `TinyColor` (re-exported from `@ctrl/tinycolor`).
+
+## Migrating from v9 to v10
+
+v10 replaces the ad-hoc props API with the canonical MUI `slots` / `slotProps` pattern. Map your existing props as follows:
+
+| v9 | v10 |
+|----|-----|
+| `adornmentPosition="end"` | `slotProps={{ adornment: { position: 'end' } }}` |
+| `Adornment={CustomBtn}` | `slots={{ adornment: CustomBtn }}` |
+| `AdornmentProps={{ sx }}` | `slotProps={{ adornment: { sx } }}` |
+| `PopoverProps={{ ... }}` | `slotProps={{ popover: { ... } }}` |
+| `PopoverBodyProps={{ ... }}` | `slotProps={{ popoverBody: { ... } }}` |
+| `<MuiColorInput label="..." color="..." />` | `slotProps={{ textField: { label: '...', color: '...' } }}` |
+| `ref` → text field root `<div>` | `ref` → root `<span class="MuiColorInput-Root">` |

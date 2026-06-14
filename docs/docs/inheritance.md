@@ -4,12 +4,16 @@ sidebar_position: 4
 
 # TextField inheritance
 
-While not explicitly documented, the props of the MUI **[TextField](https://mui.com/material-ui/api/text-field/)** component are also available on the **MuiColorInput** component.
+The text input is an MUI **[TextField](https://mui.com/material-ui/api/text-field/)**. In v10, its props are passed through the `textField` slot via `slotProps.textField`. The `onChange`, `value`, `defaultValue`, `select`, `type`, `multiline`, `inputRef`, `InputProps`, `inputProps`, and `InputLabelProps` props are managed internally and cannot be overridden on this slot.
 
 See: https://mui.com/material-ui/api/text-field/
 
 ### Example
 
 ```jsx
-<MuiColorInput size="small" variant="outlined" disabled />
+<MuiColorInput
+  slotProps={{
+    textField: { size: 'small', variant: 'outlined', disabled: true }
+  }}
+/>
 ```
