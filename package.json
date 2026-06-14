@@ -1,5 +1,5 @@
 {
-  "name": "mui-color-input",
+  "name": "@sherifmagdy/mui-color-input",
   "description": "A color input designed for the React library MUI built with TinyColor",
   "author": "Victor de la Fouchardiere <victor.delafouchardiere@gmail.com> (https://github.com/viclafouch)",
   "license": "MIT",
