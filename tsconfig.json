@@ -23,7 +23,7 @@
       "@components/*": ["./src/components/*"]
     }
   },
-  "include": ["src/**/*", ".storybook/**/*"],
+  "include": ["src/**/*", "test/**/*", ".storybook/**/*"],
   "exclude": ["vite.config.ts", "coverage", "dist"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

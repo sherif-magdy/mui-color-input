@@ -14,8 +14,9 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     globals: true,
-    setupFiles: ['./src/setupTests.ts'],
-    exclude: [...configDefaults.exclude, '**/dist/**']
+    setupFiles: ['./test/setupTests.ts'],
+    exclude: [...configDefaults.exclude, '**/dist/**'],
+    fileParallelism: false
   },
   resolve: {
     alias: {
@@ -29,10 +30,16 @@ export default defineConfig({
     minify: true,
     lib: {
       formats: ['es'],
-      entry: resolve(import.meta.dirname, 'src/index.tsx'),
+      entry: {
+        'mui-color-input': resolve(import.meta.dirname, 'src/index.tsx'),
+        ColorPopoverBody: resolve(
+          import.meta.dirname,
+          'src/entries/ColorPopoverBody.ts'
+        )
+      },
       name: 'Mui-color-input',
-      fileName: (format) => {
-        return `mui-color-input.${format}.js`
+      fileName: (format, entryName) => {
+        return `${entryName}.${format}.js`
       }
     },
     rolldownOptions: {

@@ -7,17 +7,10 @@ import { TinyColor } from '@ctrl/tinycolor'
 import Box from '@mui/material/Box'
 import { buildValueFromTinyColor } from '@shared/helpers/format'
 import { clamp, matchIsNumber } from '@shared/helpers/number'
-import type { MuiColorInputFormat, MuiColorInputProps } from '../../index.types'
-
-type ColorPopoverBodyProps = {
-  currentColor: TinyColor
-  format: MuiColorInputFormat
-  isAlphaHidden: MuiColorInputProps['isAlphaHidden']
-  onChange: (value: string) => void
-}
+import type { ColorPopoverBodyProps } from '../../index.types'
 
 const ColorPopoverBody = (props: ColorPopoverBodyProps) => {
-  const { currentColor, format, onChange, isAlphaHidden } = props
+  const { currentColor, format, onChange, isAlphaHidden, children } = props
   const [currentHsv, setCurrentHsv] = React.useState<Numberify<HSV>>(
     currentColor.toHsv()
   )
@@ -68,6 +61,10 @@ const ColorPopoverBody = (props: ColorPopoverBodyProps) => {
     onChange?.(buildValueFromTinyColor(tinyColor, format))
   }
 
+  const renderProps = { currentColor, format, onChange }
+  const renderedChildren =
+    typeof children === 'function' ? children(renderProps) : children
+
   return (
     <Box className="MuiColorInput-PopoverBody">
       <ColorSpace
@@ -98,6 +95,7 @@ const ColorPopoverBody = (props: ColorPopoverBodyProps) => {
           />
         </Box>
       ) : null}
+      {renderedChildren}
     </Box>
   )
 }

@@ -1,32 +1,31 @@
 import React from 'react'
 import ColorButton from '@components/ColorButton/ColorButton'
-import ColorPopover from '@components/ColorPopover/ColorPopover'
-import ColorPopoverBody from '@components/ColorPopoverBody/ColorPopoverBody'
-import ColorTextField from '@components/ColorTextField/ColorTextField'
 import { TinyColor } from '@ctrl/tinycolor'
-import type { TextFieldProps } from '@mui/material'
-import InputAdornment from '@mui/material/InputAdornment'
-import type { PopoverProps } from '@mui/material/Popover'
 import { FORMAT_FALLBACK } from '@shared/constants/fallback'
 import {
   buildValueFromTinyColor,
-  getSafeTinyColor,
-  stringifyInputValue
+  getSafeTinyColor
 } from '@shared/helpers/format'
-import { assocRefToPropRef } from '@shared/helpers/ref'
+import { useColorInputSlots } from '@shared/hooks/use-color-input-slots'
 import type {
   MuiColorButtonProps,
+  MuiColorInputAdornmentSlotProps,
   MuiColorInputColors,
   MuiColorInputFormat,
   MuiColorInputProps,
+  MuiColorInputSlotProps,
+  MuiColorInputSlots,
   MuiColorInputValue
 } from './index.types'
 
 export type {
   MuiColorButtonProps,
+  MuiColorInputAdornmentSlotProps,
   MuiColorInputColors,
   MuiColorInputFormat,
   MuiColorInputProps,
+  MuiColorInputSlotProps,
+  MuiColorInputSlots,
   MuiColorInputValue,
   TinyColor
 }
@@ -37,28 +36,27 @@ export function matchIsValidColor(color: MuiColorInputValue): boolean {
   return new TinyColor(color).isValid
 }
 
-const MuiColorInput = React.forwardRef(
-  (
-    {
+const MuiColorInput = React.forwardRef<HTMLSpanElement, MuiColorInputProps>(
+  (props, propRef) => {
+    const {
       value,
-      format,
-      onChange,
-      adornmentPosition = 'start',
-      PopoverProps,
-      Adornment = ColorButton,
       fallbackValue,
-      isAlphaHidden,
-      disablePopover,
-      ...restProps
-    }: MuiColorInputProps,
-    propRef: MuiColorInputProps['ref']
-  ) => {
-    const { onBlur, slotProps, ...restTextFieldProps } = restProps
-    const { onClose, ...restPopoverProps } = PopoverProps || {}
-    const isDisabled = restTextFieldProps.disabled || false
-    const textFieldRef = React.useRef<HTMLDivElement | null>(null)
+      format,
+      disablePopover: disablePopoverProp,
+      isAlphaHidden: isAlphaHiddenProp,
+      isTextFieldHidden: isTextFieldHiddenProp,
+      onChange,
+      slots,
+      slotProps
+    } = props
+
+    const isTextFieldHidden = Boolean(isTextFieldHiddenProp)
+    const disablePopover = Boolean(disablePopoverProp)
+    const isAlphaHidden = Boolean(isAlphaHiddenProp)
+
+    const anchorRef = React.useRef<HTMLSpanElement | null>(null)
     const inputRef = React.useRef<HTMLInputElement | null>(null)
-    const [anchorEl, setAnchorEl] = React.useState<HTMLDivElement | null>(null)
+    const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null)
     const currentFormat = format || FORMAT_FALLBACK
     const currentTinyColor = getSafeTinyColor(value, {
       format: currentFormat
@@ -74,8 +72,10 @@ const MuiColorInput = React.forwardRef(
       event.preventDefault()
       event.stopPropagation()
 
+      const isDisabled = Boolean(slotProps?.textField?.disabled)
+
       if (!isDisabled && !disablePopover) {
-        setAnchorEl(textFieldRef.current)
+        setAnchorEl(anchorRef.current)
       }
     }
 
@@ -106,18 +106,14 @@ const MuiColorInput = React.forwardRef(
       }
     }
 
-    const handleClose = (
-      ...args: Parameters<NonNullable<PopoverProps['onClose']>>
-    ) => {
-      onClose?.(...args)
+    const handleClose = () => {
       setAnchorEl(null)
       queueMicrotask(() => {
         inputRef.current?.focus()
       })
     }
 
-    const handleBlur = (event: React.FocusEvent<HTMLInputElement, Element>) => {
-      onBlur?.(event)
+    const handleBlur = () => {
       const tinyColorOfInputValue = new TinyColor(inputValue)
 
       if (!tinyColorOfInputValue.isValid) {
@@ -180,80 +176,54 @@ const MuiColorInput = React.forwardRef(
       handleChange(newValue)
     }
 
-    const handleRef = (ref: HTMLDivElement | null) => {
-      textFieldRef.current = ref
-      assocRefToPropRef(ref, propRef)
-    }
-
-    const handleInputRef = (ref: HTMLInputElement | null) => {
-      inputRef.current = ref
-      assocRefToPropRef(ref, inputRef)
-    }
-
     const isOpen = Boolean(anchorEl)
     const id = isOpen ? 'color-popover' : undefined
 
-    const colorButton = (
-      <InputAdornment position={adornmentPosition}>
-        <Adornment
-          disabled={isDisabled}
-          aria-describedby={id}
-          disablePopover={disablePopover || false}
-          component={disablePopover ? 'span' : undefined}
-          bgColor={currentTinyColor.toString()}
-          isBgColorValid={Boolean(
-            inputValue !== '' && currentTinyColor.isValid
-          )}
-          onClick={disablePopover ? undefined : handleClick}
-        />
-      </InputAdornment>
-    )
-
-    const { input, ...restSlotProps } = slotProps || {}
-
-    const inputSlotProps: NonNullable<TextFieldProps['slotProps']>['input'] = {
-      startAdornment: adornmentPosition === 'start' ? colorButton : undefined,
-      endAdornment: adornmentPosition === 'end' ? colorButton : undefined,
-      // eslint-disable-next-line @typescript-eslint/no-misused-spread -- spreading MUI slot props which may be a function or object
-      ...input
-    }
+    const {
+      RootSlot,
+      TextFieldSlot,
+      PopoverSlot,
+      PopoverBodySlot,
+      rootSlotProps,
+      textFieldSlotProps,
+      adornmentElement,
+      popoverSlotProps,
+      popoverBodySlotProps
+    } = useColorInputSlots({
+      propRef,
+      anchorRef,
+      inputRef,
+      inputValue,
+      currentTinyColor,
+      currentFormat,
+      id,
+      isOpen,
+      anchorEl,
+      isTextFieldHidden,
+      disablePopover,
+      isAlphaHidden,
+      handleClick,
+      handleInputChange,
+      handleBlur,
+      handleClose,
+      handlePopoverChange,
+      slots,
+      slotProps
+    })
 
     return (
-      <>
-        <ColorTextField
-          ref={handleRef}
-          spellCheck="false"
-          type="text"
-          autoComplete="off"
-          onChange={handleInputChange}
-          value={stringifyInputValue(inputValue)}
-          onBlur={handleBlur}
-          inputRef={handleInputRef}
-          disabled={isDisabled}
-          slotProps={{
-            input: inputSlotProps,
-            ...restSlotProps
-          }}
-          {...restTextFieldProps}
-        />
+      <RootSlot {...rootSlotProps}>
+        {isTextFieldHidden ? (
+          adornmentElement
+        ) : (
+          <TextFieldSlot {...textFieldSlotProps} />
+        )}
         {!disablePopover ? (
-          <ColorPopover
-            id={id}
-            open={isOpen}
-            position={adornmentPosition}
-            anchorEl={anchorEl}
-            onClose={handleClose}
-            {...restPopoverProps}
-          >
-            <ColorPopoverBody
-              onChange={handlePopoverChange}
-              currentColor={currentTinyColor}
-              format={currentFormat}
-              isAlphaHidden={isAlphaHidden}
-            />
-          </ColorPopover>
+          <PopoverSlot {...popoverSlotProps}>
+            <PopoverBodySlot {...popoverBodySlotProps} />
+          </PopoverSlot>
         ) : null}
-      </>
+      </RootSlot>
     )
   }
 )

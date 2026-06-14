@@ -8,17 +8,22 @@
   },
   "homepage": "https://viclafouch.github.io/mui-color-input/",
   "type": "module",
-  "version": "9.0.0",
+  "version": "10.0.0",
   "files": [
     "dist"
   ],
   "main": "./dist/mui-color-input.es.js",
-  "types": "./dist/index.d.ts",
+  "types": "./dist/mui-color-input.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
+      "types": "./dist/mui-color-input.d.ts",
       "import": "./dist/mui-color-input.es.js",
       "default": "./dist/mui-color-input.es.js"
+    },
+    "./ColorPopoverBody": {
+      "types": "./dist/ColorPopoverBody.d.ts",
+      "import": "./dist/ColorPopoverBody.es.js",
+      "default": "./dist/ColorPopoverBody.es.js"
     }
   },
   "repository": {
@@ -41,7 +46,7 @@
     "build": "pnpm lint && pnpm test -- run && vite build && pnpm check-types",
     "lint": "tsc && eslint",
     "lint:fix": "pnpm lint -- --fix",
-    "check-types": "attw --pack . --ignore-rules cjs-resolves-to-esm unexpected-module-syntax",
+    "check-types": "attw --pack . --profile esm-only",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "test": "vitest",
