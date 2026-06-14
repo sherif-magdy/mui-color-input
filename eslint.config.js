@@ -19,7 +19,8 @@ export default [
       '**/dist/**',
       '**/docs/**',
       '**/.docusaurus/**',
-      '**/build/**'
+      '**/build/**',
+      '**/storybook-static/**'
     ]
   },
   ...typescriptConfig,
