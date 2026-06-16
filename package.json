@@ -4,11 +4,12 @@
   "author": "Victor de la Fouchardiere <victor.delafouchardiere@gmail.com> (https://github.com/viclafouch)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/viclafouch/mui-color-input/issues"
+    "url": "https://github.com/sherif-magdy/mui-color-input/issues"
   },
-  "homepage": "https://viclafouch.github.io/mui-color-input/",
+  "homepage": "https://sherif-magdy.github.io/mui-color-input/",
   "type": "module",
   "version": "10.0.0",
+  "packageManager": "pnpm@11.6.0",
   "files": [
     "dist"
   ],
@@ -28,7 +29,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/viclafouch/mui-color-input.git"
+    "url": "git+https://github.com/sherif-magdy/mui-color-input.git"
   },
   "keywords": [
     "react",
