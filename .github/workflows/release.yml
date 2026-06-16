@@ -1,0 +1,72 @@
+name: Release
+
+# Manual release: bumps version, commits, tags, pushes, publishes to npm via
+# OIDC trusted publishing (no npm token), then creates a GitHub Release.
+on:
+  workflow_dispatch:
+    inputs:
+      release-type:
+        description: Version bump
+        required: true
+        type: choice
+        default: patch
+        options:
+          - patch
+          - minor
+          - major
+
+permissions:
+  contents: write # commit, push tag, create release
+  id-token: write # OIDC trusted publishing to npm
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # full history for standard-version
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Bump version (build, validate, commit, tag)
+        run: pnpm exec standard-version --release-as "${{ inputs.release-type }}"
+
+      - name: Push commit and tag
+        run: git push --follow-tags origin "${{ github.ref_name }}"
+
+      - name: Upgrade npm for OIDC trusted publishing
+        run: npm install -g npm@latest
+
+      - name: Publish to npm (trusted publishing / OIDC)
+        run: npm publish --provenance --access public
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="v$(node -p "require('./package.json').version")"
+          gh release create "$TAG" --title "$TAG" --generate-notes --target "${{ github.ref_name }}"
