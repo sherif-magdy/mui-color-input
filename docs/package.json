@@ -20,8 +20,11 @@
     "@docusaurus/theme-classic": "^3.9.2",
     "@docusaurus/types": "^3.9.2",
     "@mdx-js/react": "^3",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@mui/material": "^9.0.0",
+    "@sherifmagdy/mui-color-input": "^10.0.0",
     "clsx": "^2.1.1",
-    "mui-color-input": "^8.0.0",
     "prism-react-renderer": "^2.4.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4"

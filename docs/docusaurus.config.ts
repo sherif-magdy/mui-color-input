@@ -5,7 +5,7 @@ import type { Config } from '@docusaurus/types'
 const config = {
   title: 'MUI color input',
   tagline: 'A color input designed for the React library MUI',
-  url: 'https://viclafouch.github.io',
+  url: 'https://sherif-magdy.github.io',
   baseUrl: '/mui-color-input/',
   onBrokenLinks: 'throw',
   markdown: {
@@ -17,7 +17,7 @@ const config = {
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'viclafouch',
+  organizationName: 'sherif-magdy',
   projectName: 'mui-color-input',
   deploymentBranch: 'gh-pages',
   trailingSlash: true,
@@ -39,9 +39,6 @@ const config = {
         },
         docs: {
           sidebarPath: require.resolve('./sidebars.js')
-        },
-        gtag: {
-          trackingID: 'G-SZPGVX9K0M'
         }
       } satisfies Preset.Options
     ]
@@ -67,12 +64,12 @@ const config = {
           label: 'Documentation'
         },
         {
-          href: 'https://github.com/viclafouch/mui-color-input',
+          href: 'https://github.com/sherif-magdy/mui-color-input',
           label: 'GitHub',
           position: 'right'
         },
         {
-          href: 'https://www.npmjs.com/package/mui-color-input',
+          href: 'https://www.npmjs.com/package/@sherifmagdy/mui-color-input',
           label: 'NPM',
           position: 'right'
         }

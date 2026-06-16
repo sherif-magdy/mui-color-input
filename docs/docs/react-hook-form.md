@@ -10,7 +10,7 @@ Here an example if you want to plug `MuiColorInput` to your form using [React Ho
 import React from "react";
 import ReactDOM from "react-dom";
 import Button from "@mui/material/Button";
-import { MuiColorInput, matchIsValidColor } from "mui-color-input";
+import { MuiColorInput, matchIsValidColor } from "@sherifmagdy/mui-color-input";
 import { Controller, useForm } from "react-hook-form";
 
 const App = () => {

@@ -8,7 +8,7 @@ Maybe you need to validate the color value and check that it's correct. To do th
 
 ```jsx
 import React from 'react'
-import { MuiColorInput, matchIsValidColor } from 'mui-color-input'
+import { MuiColorInput, matchIsValidColor } from '@sherifmagdy/mui-color-input'
 
 const MyComponent = () => {
   const [value, setValue] = React.useState('#ffffff')

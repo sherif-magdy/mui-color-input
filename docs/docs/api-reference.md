@@ -238,7 +238,7 @@ A ref to the root `<span class="MuiColorInput-Root">` wrapper. **Breaking**: in 
 
 ## Exported types
 
-`mui-color-input` exports the following types alongside the component:
+`@sherifmagdy/mui-color-input` exports the following types alongside the component:
 
 | Type | Description |
 |------|-------------|

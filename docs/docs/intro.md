@@ -7,11 +7,11 @@ slug: /getting-started
 
 ## Install
 ```bash
-npm install mui-color-input --save
+npm install @sherifmagdy/mui-color-input --save
 ```
 or you can use **yarn**
 ```bash
-yarn add mui-color-input
+yarn add @sherifmagdy/mui-color-input
 ```
 
 We have completed installing the package.
@@ -26,7 +26,7 @@ Once you have installed `MUI Color Input` in your next.js project, it is importa
 // next.config.mjs
 /** @type {import('next').NextConfig} */
 const nextConfig = {
- transpilePackages: ['mui-color-input'],
+ transpilePackages: ['@sherifmagdy/mui-color-input'],
  // your config
 }
 
@@ -39,7 +39,7 @@ Here is a simple usage for using the component:
 
 ```jsx
 import React from 'react'
-import { MuiColorInput } from 'mui-color-input'
+import { MuiColorInput } from '@sherifmagdy/mui-color-input'
 
 const MyComponent = () => {
   const [color, setColor] = React.useState('#ffffff')

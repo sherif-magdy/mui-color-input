@@ -31,7 +31,7 @@ For example: target the `.MuiColorInput-HueSlider` global class name to customiz
 
 ```jsx
 import { styled } from 'styled-components' // or emotion
-import { MuiColorInput } from 'mui-color-input'
+import { MuiColorInput } from '@sherifmagdy/mui-color-input'
 
 const MuiColorInputStyled = styled(MuiColorInput)`
   & .MuiColorInput-AlphaSlider {

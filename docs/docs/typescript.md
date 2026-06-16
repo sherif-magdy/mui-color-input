@@ -16,7 +16,7 @@ import {
   type MuiColorInputColors,
   type MuiColorInputFormat,
   type MuiColorInputProps
-} from 'mui-color-input'
+} from '@sherifmagdy/mui-color-input'
 
 const MyComponent = () => {
   const [value, setValue] = React.useState<MuiColorInputValue>('#ffffff')
