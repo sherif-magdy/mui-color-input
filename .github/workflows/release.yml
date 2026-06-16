@@ -1,37 +1,49 @@
 name: Release
 
-# Manual release: bumps version, commits, tags, pushes, publishes to npm via
-# OIDC trusted publishing (no npm token), then creates a GitHub Release.
+# release-please (on every push to main) keeps a "release" pull request open
+# that accumulates the version bump and CHANGELOG. Merging that PR creates the
+# git tag + GitHub Release, which then triggers the npm publish job below via
+# OIDC trusted publishing (no npm token).
 on:
-  workflow_dispatch:
-    inputs:
-      release-type:
-        description: Version bump
-        required: true
-        type: choice
-        default: patch
-        options:
-          - patch
-          - minor
-          - major
+  push:
+    branches: [main]
 
 permissions:
-  contents: write # commit, push tag, create release
-  id-token: write # OIDC trusted publishing to npm
+  contents: write # release-please: commits, tags, releases
+  pull-requests: write # release-please: open the release PR
+  id-token: write # npm OIDC trusted publishing
 
 concurrency:
-  group: release
+  group: release-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
-  release:
+  release-please:
+    name: Release PR / tag
+    runs-on: ubuntu-latest
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+    steps:
+      - name: Run release-please
+        uses: googleapis/release-please-action@v4
+        id: release
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          release-type: node
+          include-component-in-tag: false # plain v<version> tags (matches v10.0.0)
+
+  npm-publish:
+    name: Publish to npm
+    needs: release-please
+    if: ${{ needs.release-please.outputs.release_created == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - name: Checkout
+      - name: Checkout (at release tag)
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # full history for standard-version
+          ref: ${{ needs.release-please.outputs.tag_name }}
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -45,26 +57,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Configure git
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-      - name: Bump version (build, validate, commit, tag)
-        run: pnpm exec standard-version --release-as "${{ inputs.release-type }}"
-
-      - name: Push commit and tag
-        run: git push --follow-tags origin "${{ github.ref_name }}"
+      - name: Build (lint, test, typecheck, bundle)
+        run: pnpm build
 
       - name: Upgrade npm for OIDC trusted publishing
         run: npm install -g npm@latest
 
       - name: Publish to npm (trusted publishing / OIDC)
         run: npm publish --provenance --access public
-
-      - name: Create GitHub Release
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          TAG="v$(node -p "require('./package.json').version")"
-          gh release create "$TAG" --title "$TAG" --generate-notes --target "${{ github.ref_name }}"
