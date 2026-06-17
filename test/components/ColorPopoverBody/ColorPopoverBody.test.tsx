@@ -53,4 +53,34 @@ describe('components/ColorPopoverBody', () => {
     fireEvent.click(screen.getByTestId('fire'))
     expect(handleChange).toHaveBeenCalledWith('#00ff00')
   })
+
+  test('resyncs the hue slider when currentColor changes externally', () => {
+    const { rerender } = render(
+      <ColorPopoverBody
+        currentColor={new TinyColor('#ff0000')}
+        format="hex8"
+        isAlphaHidden
+        onChange={() => {}}
+      />
+    )
+
+    const getHueSlider = () => {
+      return screen.getByRole('slider', { name: 'hue' })
+    }
+
+    expect(getHueSlider().getAttribute('aria-valuenow')).toBe('0')
+
+    rerender(
+      <ColorPopoverBody
+        currentColor={new TinyColor('hsl(120, 50%, 50%)')}
+        format="hex8"
+        isAlphaHidden
+        onChange={() => {}}
+      />
+    )
+
+    const syncedHueValue = Number(getHueSlider().getAttribute('aria-valuenow'))
+    expect(syncedHueValue).toBeGreaterThan(30)
+    expect(syncedHueValue).toBeLessThan(40)
+  })
 })
