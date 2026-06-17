@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.1.1](https://github.com/sherif-magdy/mui-color-input/compare/v10.1.0...v10.1.1) (2026-06-17)
+
+
+### Bug Fixes
+
+* **ColorPopoverBody:** sync hue slider and color space on external color changes ([7f1b57e](https://github.com/sherif-magdy/mui-color-input/commit/7f1b57eb6a72a5d54515b107355323a8374bd3c0))
+
 ## [10.1.0](https://github.com/sherif-magdy/mui-color-input/compare/v10.0.0...v10.1.0) (2026-06-16)
 
 

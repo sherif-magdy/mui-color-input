@@ -11,7 +11,7 @@
   },
   "homepage": "https://sherif-magdy.github.io/mui-color-input/",
   "type": "module",
-  "version": "10.1.0",
+  "version": "10.1.1",
   "packageManager": "pnpm@11.6.0",
   "files": [
     "dist"
