@@ -58,6 +58,7 @@
     "prepare": "husky"
   },
   "peerDependencies": {
+    "@ctrl/tinycolor": "^4.0.0",
     "@emotion/react": "^11.13.0",
     "@emotion/styled": "^11.13.0",
     "@mui/material": "^7.0.0 || ^9.0.0",
@@ -70,10 +71,8 @@
       "optional": true
     }
   },
-  "dependencies": {
-    "@ctrl/tinycolor": "^4.2.0"
-  },
   "devDependencies": {
+    "@ctrl/tinycolor": "^4.2.0",
     "@arethetypeswrong/cli": "^0.18.2",
     "@emotion/cache": "^11.14.0",
     "@emotion/react": "^11.14.0",
