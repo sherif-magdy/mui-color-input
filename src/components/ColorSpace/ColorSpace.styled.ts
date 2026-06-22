@@ -1,7 +1,11 @@
 import { styled } from '@mui/material/styles'
 import { BG_IMAGE_SPACE } from '@shared/constants/styles'
+import type { StyledComponentType } from '@shared/constants/types'
 
-const Styled = {
+const Styled: {
+  Space: StyledComponentType<'div'>
+  Thumb: StyledComponentType<'div'>
+} = {
   Space: styled('div')(() => {
     return {
       width: '100%',

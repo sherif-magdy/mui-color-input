@@ -4,6 +4,8 @@ import { configDefaults, defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
 import pkg from './package.json' with { type: 'json' }
 
+const isStorybook = Boolean(process.env.STORYBOOK)
+
 const external = [
   ...Object.keys(pkg.peerDependencies ?? {}),
   'react/jsx-runtime',
@@ -28,29 +30,40 @@ export default defineConfig({
   build: {
     target: 'esnext',
     minify: true,
-    lib: {
-      formats: ['es'],
-      entry: {
-        'mui-color-input': resolve(import.meta.dirname, 'src/index.tsx'),
-        ColorPopoverBody: resolve(
-          import.meta.dirname,
-          'src/entries/ColorPopoverBody.ts'
-        )
-      },
-      name: 'Mui-color-input',
-      fileName: (format, entryName) => {
-        return `${entryName}.${format}.js`
-      }
-    },
-    rolldownOptions: {
-      output: {
-        sourcemapExcludeSources: true
-      },
-      external
-    }
+    ...(isStorybook
+      ? {}
+      : {
+          lib: {
+            formats: ['es'],
+            entry: {
+              'mui-color-input': resolve(import.meta.dirname, 'src/index.tsx'),
+              ColorPopoverBody: resolve(
+                import.meta.dirname,
+                'src/entries/ColorPopoverBody.ts'
+              )
+            },
+            name: 'Mui-color-input',
+            fileName: (format, entryName) => {
+              return `${entryName}.${format}.js`
+            }
+          },
+          rolldownOptions: {
+            output: {
+              sourcemapExcludeSources: true
+            },
+            external
+          }
+        })
   },
   plugins: [
     react(),
-    dts({ exclude: ['/**/*.stories.tsx', '/**/*.test.tsx'], rollupTypes: true })
+    ...(isStorybook
+      ? []
+      : [
+          dts({
+            exclude: ['/**/*.stories.tsx', '/**/*.test.tsx'],
+            rollupTypes: true
+          })
+        ])
   ]
 })

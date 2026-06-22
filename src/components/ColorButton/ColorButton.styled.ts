@@ -1,7 +1,8 @@
 import Button from '@mui/material/Button'
 import { styled } from '@mui/material/styles'
+import type { StyledComponentType } from '@shared/constants/types'
 
-const Styled = {
+const Styled: { Button: StyledComponentType<typeof Button> } = {
   Button: styled(Button)(() => {
     return {
       backgroundSize: '8px 8px',

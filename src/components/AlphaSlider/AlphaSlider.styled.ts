@@ -1,7 +1,8 @@
 import Slider from '@mui/material/Slider'
 import { styled } from '@mui/material/styles'
+import type { StyledComponentType } from '@shared/constants/types'
 
-const Styled = {
+const Styled: { Slider: StyledComponentType<typeof Slider> } = {
   Slider: styled(Slider, {
     shouldForwardProp: (prop) => {
       return prop !== '$rgbaFrom' && prop !== '$rgbaTo'
