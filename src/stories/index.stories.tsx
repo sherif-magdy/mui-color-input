@@ -2,9 +2,12 @@ import React from 'react'
 import { action } from 'storybook/actions'
 import type { ColorButtonProps } from '@components/ColorButton/ColorButton'
 import {
+  Box,
   Button,
   createTheme,
   Icon,
+  Paper,
+  Popper,
   TextField,
   ThemeProvider
 } from '@mui/material'
@@ -196,3 +199,49 @@ export const ExtendedPopoverBody: StoryObj<typeof MuiColorInput> = () => {
 }
 
 ExtendedPopoverBody.decorators = [withTheme]
+
+export const NestedInPopper: StoryObj<typeof MuiColorInput> = () => {
+  const [value, setValue] = React.useState<MuiColorInputValue>('#00bcd4')
+  const [isOpen, setIsOpen] = React.useState(false)
+  const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null)
+
+  const handleChange = (
+    ...argsChange: Parameters<NonNullable<MuiColorInputProps['onChange']>>
+  ) => {
+    action('onChange')(argsChange)
+    setValue(argsChange[0])
+  }
+
+  const handleToggle = () => {
+    setIsOpen((prevIsOpen) => {
+      return !prevIsOpen
+    })
+  }
+
+  return (
+    <Box sx={{ p: 4 }}>
+      <Button
+        ref={setAnchorEl}
+        variant="contained"
+        onClick={handleToggle}
+        aria-expanded={isOpen}
+        aria-controls={isOpen ? 'nested-color-popper' : undefined}
+      >
+        {isOpen ? 'Close popover' : 'Open popover'}
+      </Button>
+      <Popper
+        id={isOpen ? 'nested-color-popper' : undefined}
+        open={isOpen}
+        anchorEl={anchorEl}
+        placement="bottom-start"
+        keepMounted
+      >
+        <Paper elevation={8} sx={{ p: 2 }}>
+          <MuiColorInput value={value} format="hex" onChange={handleChange} />
+        </Paper>
+      </Popper>
+    </Box>
+  )
+}
+
+NestedInPopper.decorators = [withTheme]
