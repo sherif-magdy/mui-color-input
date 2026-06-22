@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.1.2](https://github.com/sherif-magdy/mui-color-input/compare/v10.1.1...v10.1.2) (2026-06-22)
+
+
+### Bug Fixes
+
+* keep declaration emit and storybook build clean ([7aff8f4](https://github.com/sherif-magdy/mui-color-input/commit/7aff8f45b8a9f239b5e74bd2d2dd0776173ec1cd))
+
 ## [10.1.1](https://github.com/sherif-magdy/mui-color-input/compare/v10.1.0...v10.1.1) (2026-06-17)
 
 
